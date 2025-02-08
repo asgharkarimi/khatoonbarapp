@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
+      fontFamily: 'Vazir',
       // Primary color
       primaryColor: Colors.blue,
       // Accent color
       colorScheme: ColorScheme.light(
-        secondary: Colors.blueAccent,
+        secondary: Color(0xff008000),
       ),
       // Scaffold background color
-      scaffoldBackgroundColor: Colors.white,
+      scaffoldBackgroundColor: Colors.grey.shade50,
       // AppBar theme
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.blue,
@@ -42,7 +43,8 @@ class AppTheme {
       // Button theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.blue,
+          backgroundColor: Colors.blue, // Button background color
+          foregroundColor: Colors.white, // Text color
           textStyle: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,

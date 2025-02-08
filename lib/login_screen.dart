@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Import shared_preferences
 import 'api_service.dart';
 import 'main_screen.dart'; // Import the ApiService class
 
@@ -20,7 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (phoneNumber.isEmpty || password.isEmpty) {
       setState(() {
-        errorMessage = "Please enter both phone number and password.";
+        errorMessage = "لطفاً شماره تلفن و رمز عبور را وارد کنید.";
       });
       return;
     }
@@ -29,24 +30,32 @@ class _LoginScreenState extends State<LoginScreen> {
       final driverData = await _apiService.checkDriver(phoneNumber, password);
 
       if (driverData != null) {
+        // Save user data in SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('phoneNumber', phoneNumber);
+        await prefs.setInt('id', driverData['id']);
+        await prefs.setString('name', driverData['name']);
+        await prefs.setString('family', driverData['family']);
+
         // Show success Snackbar
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Login successful!"),
+            content: Text("ورود موفقیت‌آمیز بود!"),
             backgroundColor: Colors.green,
           ),
         );
-        // Navigate to MainScreen and pass driver data
-        Navigator.push(
+
+        // Navigate to MainScreen
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => MainScreen(driverData: driverData),
+            builder: (context) => MainScreen(),
           ),
         );
       }
     } catch (e) {
       setState(() {
-        errorMessage = e.toString();
+        errorMessage = "خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.";
       });
     }
   }
@@ -55,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Login"),
+        title: Text("ورود به سیستم"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -65,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
             TextField(
               controller: _phoneNumberController,
               decoration: InputDecoration(
-                labelText: "Phone Number",
+                labelText: "شماره تلفن",
                 border: OutlineInputBorder(),
               ),
               keyboardType: TextInputType.phone,
@@ -74,7 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
             TextField(
               controller: _passwordController,
               decoration: InputDecoration(
-                labelText: "Password",
+                labelText: "رمز عبور",
                 border: OutlineInputBorder(),
               ),
               obscureText: true,
@@ -88,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(height: 16),
             ElevatedButton(
               onPressed: checkDriver,
-              child: Text("Login"),
+              child: Text("ورود"),
             ),
           ],
         ),
